@@ -27,12 +27,12 @@ end
 
 def name_match(known_names, name)
   # Split incoming name into parts (split by space)
-  incoming_name_parts = name.split
+  incoming_name_parts = name.downcase.split
 
   # Iterate through each known name, looking for a match
   known_names.any? do |known_name|
     # Split the known name into parts
-    known_name_parts = known_name.split
+    known_name_parts = known_name.downcase.split
 
     # Find the intersection of the known name parts and incoming name parts
     intersection = known_name_parts & incoming_name_parts
@@ -47,21 +47,18 @@ def name_match(known_names, name)
     next true if known_name_parts.last == incoming_name_parts.last && [known_name_parts.size, incoming_name_parts.size].include?(intersection.size)
 
     # If both the known name and incoming name have three parts
-    if known_name_parts.size == 3 && incoming_name_parts.size == 3
-      # If exactly two parts are identical
-      if intersection.size == 2
-        # Calculate the parts of the incoming name that are not in the known name
-        difference = incoming_name_parts - known_name_parts
-        # If there is a part of the incoming name not in the known name
-        # and if there's a part in the known name that starts with the same letter as the different part, return true
-        # This checks cases like 5.1, 5.2, 5.5, 6.1, 6.2, 6.3
-        if difference.size > 0 && known_name_parts.any? { |part| part[0] == difference.first[0] }
-          next true
-        else
-          # Check if the middle initial of the known name matches the middle name of the incoming name, if not, return false
-          # This checks cases like 1.3, 2.3, 3.2, 3.3, 4.3, 5.3, 5.4
-          next false unless known_name_parts[1][0] == incoming_name_parts[1][0]
-        end
+    if known_name_parts.size == 3 && incoming_name_parts.size == 3 && intersection.size == 2
+      # Calculate the parts of the incoming name that are not in the known name
+      difference = incoming_name_parts - known_name_parts
+      # If there is a part of the incoming name not in the known name
+      # and if there's a part in the known name that starts with the same letter as the different part, return true
+      # This checks cases like 5.1, 5.2, 5.5, 6.1, 6.2, 6.3
+      if difference.size > 0 && known_name_parts.any? { |part| part[0] == difference.first[0] }
+        next true
+      else
+        # Check if the middle initial of the known name matches the middle name of the incoming name, if not, return false
+        # This checks cases like 1.3, 2.3, 3.2, 3.3, 4.3, 5.3, 5.4
+        next false unless known_name_parts[1][0] == incoming_name_parts[1][0]
       end
     end
 
@@ -129,7 +126,7 @@ def test
   p 'error case 6.3' unless name_match(known_names, "Gabriel A Capone")
   p 'error case 6.4' if name_match(known_names, "Capone Francis Alphonse")
 
-  known_names = ["Alphonse Capone"]
+  known_names = ["Alphonse Gabriel Capone"]
   p 'error case 7.1' if name_match(known_names, "Alphonse Capone Gabriel")
   p 'error case 7.2' if name_match(known_names, "Capone Alphonse Gabriel")
   p 'error case 7.3' if name_match(known_names, "Capone Gabriel")
