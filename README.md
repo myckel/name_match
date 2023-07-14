@@ -1,1 +1,1 @@
-# Checkr Challenge solution for names matches
+# Checkr Challenge solution for name matches
